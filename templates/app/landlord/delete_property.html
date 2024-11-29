@@ -1,0 +1,21 @@
+{% extends 'app/landlord/lan_base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Delete Property</h2>
+    
+    <div class="alert alert-warning" role="alert">
+        <p>Are you sure you want to delete the following property?</p>
+        <p><strong>Address:</strong> {{ property.address }}</p>
+        <p><strong>City:</strong> {{ property.city }}</p>
+        <p><strong>State:</strong> {{ property.state }}</p>
+        <p><strong>Rent:</strong> Ksh {{ property.rent }}</p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete Property</button>
+        <a href="{% url 'property_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'app/landlord/lan_base.html' %}
+
+{% block title %}Manage Tenants - RentBin{% endblock %}
+
+{% block content %}
+    <section class="manage-tenants-section">
+        <h2 class="text-center mb-4">Manage Tenants</h2>
+
+        <!-- Tenant List Table -->
+        <div class="tenant-list mb-4">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Property</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tenant in tenants %}
+                        <tr>
+                            <td>{{ tenant.user.first_name }} {{ tenant.user.last_name }}</td>
+                            <td>{{ tenant.user.email }}</td>
+                            <td>{{ tenant.phone_number }}</td>
+                            <td>{{ tenant.current_property.address }}</td> <!-- Assuming `current_property` has an `address` field -->
+                            <td>
+                                {% if tenant.account_status == 'active' %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'tenant_detail' tenant.id %}" class="btn btn-info btn-sm">View</a>
+                                {% if tenant.account_status == 'active' %}
+                                    <a href="{% url 'deactivate_tenant' tenant.id %}" class="btn btn-warning btn-sm">Deactivate</a>
+                                {% else %}
+                                    <a href="{% url 'activate_tenant' tenant.id %}" class="btn btn-success btn-sm">Activate</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pending Deactivation Requests -->
+        <div class="pending-requests">
+            <h3 class="mb-3">Pending Deactivation Requests</h3>
+            {% if deactivation_requests %}
+                <ul class="list-group">
+                    {% for request in deactivation_requests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <p class="mb-0">{{ request.tenant.user.first_name }} {{ request.tenant.user.last_name }} - {{ request.reason }}</p>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'approve_deactivation' request.id %}" class="btn btn-success btn-sm">Approve</a>
+                                <a href="{% url 'reject_deactivation' request.id %}" class="btn btn-danger btn-sm">Reject</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No pending deactivation requests.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

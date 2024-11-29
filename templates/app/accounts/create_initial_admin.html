@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    </head>
+<body>
+    <div class="register-page">
+        <div class="register-form-container">
+            <h2>Create Initial Admin User</h2>
+            <form method="post" action="{% url 'create_initial_admin' %}">
+                {% csrf_token %}
+                {{ form.as_p }} 
+                <button type="submit" class="btn btn-primary">Create Admin User</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

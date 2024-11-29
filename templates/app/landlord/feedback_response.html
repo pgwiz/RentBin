@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Response - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/feedback_response.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'landlord_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="feedback-response-section">
+            <h2>Feedback Response</h2>
+
+            <div class="feedback-details">
+                <h3>Feedback from {{ feedback.tenant.name }}</h3>
+                <p><strong>Subject:</strong> {{ feedback.subject }}</p>
+                <p><strong>Message:</strong> {{ feedback.message }}</p>
+            </div>
+
+            <div class="response-form">
+                <h3>Respond to Feedback</h3>
+                <form method="post" action="{% url 'send_response' feedback.id %}">
+                    {% csrf_token %}
+                    <label for="response">Response:</label>
+                    <textarea id="response" name="response" rows="5" required></textarea>
+
+                    <button type="submit" class="btn">Send Response</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

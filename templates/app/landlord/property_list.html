@@ -1,0 +1,43 @@
+{% extends 'app/landlord/lan_base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">My Properties</h2>
+
+    <div class="property-list">
+        {% if properties %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for property in properties %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'property_detail' property.id %}" class="text-decoration-none text-primary">
+                                    {{ property.address }}
+                                </a>
+                            </h5>
+                            <p class="card-text">
+                                <strong>City:</strong> {{ property.city }} <br>
+                                <strong>State:</strong> {{ property.state }} <br>
+                                <strong>Rent:</strong> Ksh {{ property.rent }} <br>
+                                <strong>Bedrooms:</strong> {{ property.bedrooms }} <br>
+                                <strong>Bathrooms:</strong> {{ property.bathrooms }} <br>
+                                <strong>Description:</strong> {{ property.description|truncatechars:100 }}
+                            </p>
+                        </div>
+                        <div class="card-footer text-end">
+                            <a href="{% url 'edit_property' property.id %}" class="btn btn-secondary btn-sm">Edit</a>
+                            <a href="{% url 'delete_property' property.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">No properties available. 
+                <a href="{% url 'add_property' %}" class="text-primary">Add Property</a>
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

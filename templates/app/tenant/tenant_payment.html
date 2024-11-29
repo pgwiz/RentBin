@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/payment.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'tenant_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="payment-section">
+            <h2>Make Payment</h2>
+
+            <div class="payment-details">
+                <h3>Payment for {{ rent.property.address }}</h3>
+                <p><strong>Due Date:</strong> {{ rent.due_date }}</p>
+                <p><strong>Amount Due:</strong> ${{ rent.amount }}</p>
+            </div>
+
+            <div class="payment-form">
+                <form method="post" action="{% url 'process_payment' rent.id %}">
+                    {% csrf_token %}
+                    <label for="card-number">Card Number:</label>
+                    <input type="text" id="card-number" name="card-number" required>
+
+                    <label for="expiry-date">Expiry Date:</label>
+                    <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" required>
+
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" name="cvv" required>
+
+                    <button type="submit" class="btn">Pay Now</button>
+                </form>
+            </div>
+
+            <div class="payment-options">
+                <p><strong>Other Payment Options:</strong></p>
+                <ul>
+                    <li>PayPal</li>
+                    <li>Bank Transfer</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

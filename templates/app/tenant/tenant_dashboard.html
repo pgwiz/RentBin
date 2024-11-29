@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Dashboard - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/dashboard.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="dashboard-section">
+            <h2>Welcome, {{ tenant.name }}</h2>
+
+            <div class="dashboard-items">
+                <div class="item">
+                    <h3>My Properties</h3>
+                    <ul>
+                        {% for property in tenant.properties %}
+                            <li><a href="{% url 'property_detail' property.id %}">{{ property.address }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="item">
+                    <h3>Upcoming Rent</h3>
+                    <ul>
+                        {% for rent in upcoming_rent %}
+                            <li>
+                                <p>Property: {{ rent.property.address }}</p>
+                                <p>Due Date: {{ rent.due_date }}</p>
+                                <p>Amount: ${{ rent.amount }}</p>
+                                <a href="{% url 'make_payment' rent.id %}" class="btn">Pay Now</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="item">
+                    <h3>Announcements</h3>
+                    <ul>
+                        {% for announcement in announcements %}
+                            <li>{{ announcement.content }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

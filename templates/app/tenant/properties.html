@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Account - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/manage_account.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'tenant_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="manage-account-section">
+            <h2>Manage Account</h2>
+
+            <div class="account-actions">
+                <div class="action-item">
+                    <h3>Change Password</h3>
+                    <form method="post" action="{% url 'change_password' %}">
+                        {% csrf_token %}
+                        <label for="old-password">Old Password:</label>
+                        <input type="password" id="old-password" name="old_password" required>
+
+                        <label for="new-password">New Password:</label>
+                        <input type="password" id="new-password" name="new_password" required>
+
+                        <label for="confirm-password">Confirm Password:</label>
+                        <input type="password" id="confirm-password" name="confirm_password" required>
+
+                        <button type="submit" class="btn">Change Password</button>
+                    </form>
+                </div>
+
+                <div class="action-item">
+                    <h3>Deactivate Account</h3>
+                    <p>Please note that deactivating your account will require approval from your landlord.</p>
+                    <form method="post" action="{% url 'deactivate_account' %}">
+                        {% csrf_token %}
+                        <label for="deactivation-reason">Reason for Deactivation:</label>
+                        <textarea id="deactivation-reason" name="deactivation_reason" rows="3"></textarea>
+
+                        <button type="submit" class="btn btn-danger">Deactivate Account</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

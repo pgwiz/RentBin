@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Approvals - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/tenant_approvals.css' %}"> 
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'landlord_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="tenant-approvals-section">
+            <h2>Tenant Approvals</h2>
+
+            <div class="pending-approvals">
+                <h3>Pending Tenant Requests</h3>
+                <ul>
+                    {% for request in pending_requests %}
+                        <li>
+                            <p>{{ request.tenant.name }} - {{ request.tenant.email }}</p> 
+                            <div class="actions">
+                                <a href="{% url 'approve_tenant' request.id %}" class="btn btn-small btn-success">Approve</a>
+                                <a href="{% url 'reject_tenant' request.id %}" class="btn btn-small btn-danger">Reject</a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

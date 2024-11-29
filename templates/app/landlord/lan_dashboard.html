@@ -1,0 +1,130 @@
+{% extends 'app/landlord/lan_base.html' %}
+
+{% block content %}
+<section class="dashboard-section py-4">
+    <div class="container">
+        <h2>Welcome, {{ landlord.user.first_name }} {{ landlord.user.last_name }}</h2>
+
+        <div class="row g-4">
+            <!-- My Properties Section -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h3>My Properties</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if landlord.properties.exists %}
+                            <ul class="list-group">
+                                {% for property in landlord.properties.all %}
+                                    <li class="list-group-item">
+                                        <a href="{% url 'property_detail' property.id %}">{{ property.address }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No properties available. <a href="{% url 'add_property' %}">Add Property</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{% url 'add_property' %}" class="btn btn-outline-primary">Add Property</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rent Payments Section -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h3>Rent Payments</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if rent_payments %}
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Tenant</th>
+                                        <th>Due Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in rent_payments %}
+                                        <tr>
+                                            <td>{{ payment.property.address }}</td>
+                                            <td>{{ payment.tenant.user.username }}</td>
+                                            <td>{{ payment.due_date }}</td>
+                                            <td>${{ payment.amount }}</td>
+                                            <td>{{ payment.status }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p>No rent payments available.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tenant List Section -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h3>Tenant List</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if tenants.exists %}
+                            <ul class="list-group">
+                                {% for tenant_user in tenants %}
+                                    <li class="list-group-item">
+                                        <strong>First Name:</strong> {{ tenant_user.first_name }} | 
+                                        <strong>Username:</strong> {{ tenant_user.username }} | 
+                                        <strong>Email:</strong> {{ tenant_user.email }} | 
+                                        <span>
+                                            <strong>Status:</strong>
+                                            {% if tenant_user.is_active %}
+                                                <a href="{% url 'toggle_tenant_status' tenant_user.id %}" class="btn btn-warning btn-sm">Deactivate</a>
+                                            {% else %}
+                                                <a href="{% url 'toggle_tenant_status' tenant_user.id %}" class="btn btn-success btn-sm">Activate</a>
+                                            {% endif %}
+                                        </span>
+
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No tenants found.</p>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Post Announcement Section -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h3>Post Announcement</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'landlord_dashboard' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="announcement-title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="announcement-title" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="announcement-content" class="form-label">Message</label>
+                                <textarea class="form-control" id="announcement-content" name="content" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Post</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

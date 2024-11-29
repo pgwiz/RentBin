@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Feedback - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/contact_feedback.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'tenant_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="contact-feedback-section">
+            <h2>Contact & Feedback</h2>
+
+            <div class="contact-form">
+                <h3>Send us a Message</h3>
+                <form method="post" action="{% url 'send_feedback' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_type" value="tenant">
+
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" required>
+
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+
+                    <button type="submit" class="btn">Send Message</button>
+                </form>
+            </div>
+
+            <div class="faq">
+                <h3>Frequently Asked Questions</h3>
+                <ul>
+                    <li>
+                        <h4>How do I pay my rent online?</h4>
+                        <p>Go to your dashboard, click on "Upcoming Rent," and then click "Pay Now" next to the relevant property.</p>
+                    </li>
+                    <li>
+                        <h4>What if I have a maintenance request?</h4>
+                        <p>Please contact your landlord directly using their provided contact information.</p>
+                    </li>
+                    <li>
+                        <h4>How do I update my profile information?</h4>
+                        <p>Go to your profile page and click on the "Edit Profile" button.</p>
+                    </li>
+                    </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

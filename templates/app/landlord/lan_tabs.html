@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/landlord_tabs.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'landlord_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="tabs-section">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="reminders">Reminders</button>
+                <button class="tab-button" data-tab="history">History</button>
+                <button class="tab-button" data-tab="contact">Contact</button>
+            </div>
+
+            <div class="tab-content">
+                <div id="reminders" class="tab-pane active">
+                    <h2>Reminders</h2>
+                    <div class="reminder-list">
+                        {% for reminder in reminders %}
+                            <div class="reminder-item">
+                                <p>Reminder to {{ reminder.tenant.name }} for {{ reminder.property.address }} - Due on {{ reminder.due_date }}</p>
+                                <div class="actions">
+                                    <a href="{% url 'edit_reminder' reminder.id %}" class="btn btn-small">Edit</a>
+                                    <a href="{% url 'delete_reminder' reminder.id %}" class="btn btn-small btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="create-reminder">
+                        <h3>Create New Reminder</h3>
+                        <form method="post" action="{% url 'create_reminder' %}">
+                            {% csrf_token %}
+                            <label for="tenant">Tenant:</label>
+                            <select id="tenant" name="tenant">
+                                {% for tenant in tenants %}
+                                    <option value="{{ tenant.id }}">{{ tenant.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label for="property">Property:</label>
+                            <select id="property" name="property">
+                                {% for property in properties %}
+                                    <option value="{{ property.id }}">{{ property.address }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <label for="due-date">Due Date:</label>
+                            <input type="date" id="due-date" name="due_date" required>
+
+                            <button type="submit" class="btn">Create Reminder</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="history" class="tab-pane">
+                    <h2>History</h2>
+                    <p>View past rent payments and other historical data.</p>
+                    </div>
+
+                <div id="contact" class="tab-pane">
+                    <h2>Contact</h2>
+                    <p>Contact information for support or to provide feedback.</p>
+                    </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and panes
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                // Add active class to the clicked button and corresponding pane
+                button.classList.add('active');
+                const tabId = button.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

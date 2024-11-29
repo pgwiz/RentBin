@@ -1,0 +1,25 @@
+{% extends 'app/tenant/ten_base.html' %}
+
+{% block title %}Tenant Setup - RentBin{% endblock %}
+
+{% block content %}
+<div class="setup-page">
+    <h2>Complete Your Tenant Profile</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{ form.as_p }}  <!-- Render form fields automatically -->
+        
+        <div class="form-group">
+            <label for="rent_amount">Select Rent Amount</label>
+            <select name="rent_amount" class="form-control" required>
+                {% for property in properties %}
+                    <option value="{{ property.rent }}">{{ property.address }} - Ksh {{ property.rent }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Submit</button>
+    </form>
+</div>
+{% endblock %}

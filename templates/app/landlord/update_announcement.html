@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Announcements - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/update_announcements.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'landlord_dashboard' %}">Dashboard</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="update-announcements-section">
+            <h2>Update Announcements</h2>
+
+            <div class="announcement-list">
+                {% for announcement in announcements %}
+                    <div class="announcement-item">
+                        <h3>{{ announcement.title }}</h3>
+                        <p class="date">{{ announcement.date_posted }}</p>
+                        <p>{{ announcement.content }}</p>
+
+                        <div class="actions">
+                            <a href="{% url 'edit_announcement' announcement.id %}" class="btn btn-small">Edit</a>
+                            <a href="{% url 'delete_announcement' announcement.id %}" class="btn btn-small btn-danger">Delete</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="create-announcement">
+                <h3>Create New Announcement</h3>
+                <form method="post" action="{% url 'create_announcement' %}">
+                    {% csrf_token %}
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" required>
+
+                    <label for="content">Content:</label>
+                    <textarea id="content" name="content" rows="5" required></textarea>
+
+                    <button type="submit" class="btn">Create Announcement</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

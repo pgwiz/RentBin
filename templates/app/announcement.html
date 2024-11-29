@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - RentBin</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style/announcements.css' %}"> 
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">RentBin</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li> 
+                    <li><a href="{% url 'profile' %}">Profile</a></li> 
+                    <li><a href="{% url 'logout' %}">Logout</a></li> 
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="announcements-section">
+            <h2>Announcements</h2>
+            <div class="announcements-container">
+                {% for announcement in announcements %} 
+                <div class="announcement">
+                    <h3>{{ announcement.title }}</h3>
+                    <p class="date">{{ announcement.date_posted }}</p>
+                    <p>{{ announcement.content }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

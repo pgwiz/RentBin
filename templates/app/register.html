@@ -1,0 +1,76 @@
+{% extends 'app/tenant/ten_base.html' %}
+
+{% load widget_tweaks %}
+
+{% block title %}Create Tenant Profile - RentBin{% endblock %}
+
+{% block content %}
+    <div class="register-page d-flex align-items-center justify-content-center">
+        <div class="register-form-container p-4 rounded shadow-sm bg-light">
+            <h2 class="text-center mb-4">Create Your Tenant Profile</h2>
+            <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- Email -->
+     <div class="mb-3">
+        <label for="id_first_name" class="form-label">First Name</label>
+        {{ form.first_name|add_class:"form-control" }}
+         <div class="mb-3">
+        <label for="id_last_name" class="form-label">Last Name</label>
+        {{ form.last_name|add_class:"form-control" }}
+    </div>
+    </div>
+                
+    <div class="mb-3">
+        <label for="id_email" class="form-label">Email Address</label>
+        {{ form.email|add_class:"form-control" }}
+    </div>
+    
+    <!-- Password -->
+    <div class="mb-3">
+        <label for="id_password1" class="form-label">Password</label>
+        {{ form.password1|add_class:"form-control" }}
+    </div>
+    <div class="mb-3">
+        <label for="id_password2" class="form-label">Confirm Password</label>
+        {{ form.password2|add_class:"form-control" }}
+    </div>
+
+    <!-- Phone Number -->
+    <div class="mb-3">
+        <label for="id_phone_number" class="form-label">Phone Number</label>
+        {{ form.phone_number|add_class:"form-control" }}
+    </div>
+                <input type="hidden" name="status" value="Pending" id="id_status">
+                
+  
+    <!-- Emergency Contact -->
+    <div class="mb-3">
+        <label for="id_emergency_contact" class="form-label">Emergency Contact</label>
+        {{ form.emergency_contact|add_class:"form-control" }}
+    </div>
+
+    <!-- Hidden Status Field -->
+    {{ form.status }}
+    
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary w-100">Register</button>
+</form>
+
+        </div>
+    </div>
+    <script>
+    // JavaScript for Password Validation
+    document.getElementById('registrationForm').addEventListener('submit', function (e) {
+        const password1 = document.getElementById('id_password1').value;
+        const password2 = document.getElementById('id_password2').value;
+        const passwordError = document.getElementById('passwordError');
+
+        if (password1 !== password2) {
+            e.preventDefault();  // Prevent form submission
+            passwordError.style.display = 'block';  // Show error message
+        } else {
+            passwordError.style.display = 'none';  // Hide error message
+        }
+    });
+</script>
+{% endblock %}

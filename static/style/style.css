@@ -1,0 +1,106 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Header */
+header {
+    background: #007bff;
+    color: #fff;
+    padding: 1rem 0;
+}
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 1rem;
+}
+header .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+header nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Hero Section */
+.hero {
+    background: #f4f4f4;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+.hero h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+.hero .cta-buttons .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    text-decoration: none;
+    color: #fff;
+    background: #007bff;
+    border-radius: 5px;
+}
+.hero .cta-buttons .btn.secondary {
+    background: #6c757d;
+}
+
+.contact-section-c{
+    margin-left: 30px;
+    margin-right: 30px;
+}
+/* Features Section */
+#features {
+    padding: 2rem 1rem;
+    background: #fff;
+    text-align: center;
+}
+.features-container {
+    display: flex;
+    justify-content: space-around;
+    max-width: 1200px;
+    margin: auto;
+}
+.feature {
+    width: 45%;
+    text-align: left;
+}
+.feature h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.feature ul {
+    list-style: disc;
+    margin-left: 1rem;
+}
+
+/* Footer */
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+footer ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0;
+}
+footer ul li a {
+    color: #fff;
+    text-decoration: none;
+}
