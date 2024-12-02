@@ -1,25 +1,54 @@
 {% extends 'app/tenant/ten_base.html' %}
 
-{% block title %}Tenant Setup - RentBin{% endblock %}
+{% block title %}Tenant Setup{% endblock %}
 
 {% block content %}
-<div class="setup-page">
-    <h2>Complete Your Tenant Profile</h2>
+<div class="container mt-5">
+    <h2>Setup Your Tenant Profile</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
-        {{ form.as_p }}  <!-- Render form fields automatically -->
-        
-        <div class="form-group">
-            <label for="rent_amount">Select Rent Amount</label>
-            <select name="rent_amount" class="form-control" required>
-                {% for property in properties %}
-                    <option value="{{ property.rent }}">{{ property.address }} - Ksh {{ property.rent }}</option>
-                {% endfor %}
-            </select>
+        <div class="mb-3">
+            <label for="id_phone_number" class="form-label">Phone Number</label>
+            {{ form.phone_number }}
         </div>
 
-        <button type="submit" class="btn btn-success mt-3">Submit</button>
+        <div class="mb-3">
+            <label for="id_profile_picture" class="form-label">Profile Picture</label>
+            {{ form.profile_picture }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_date_of_birth" class="form-label">Date of Birth</label>
+            {{ form.date_of_birth }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_emergency_contact" class="form-label">Emergency Contact</label>
+            {{ form.emergency_contact }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_address" class="form-label">Address</label>
+            {{ form.address }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_current_property" class="form-label">Select Property</label>
+            {{ form.current_property }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_rental_history" class="form-label">Rental History</label>
+            {{ form.rental_history }}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_notes" class="form-label">Notes</label>
+            {{ form.notes }}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
     </form>
 </div>
 {% endblock %}

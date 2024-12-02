@@ -31,8 +31,8 @@ urlpatterns = [
     path('manage-tenants/', views.manage_tenants, name='manage_tenants'),
     path('toggle-tenant-status/<int:tenant_id>/', views.toggle_tenant_status, name='toggle_tenant_status'),
 
-    path('landlord/create/', views.create_landlord, name='create_landlord'),
-    path('accounts/create/', views.create_initial_landlord, name='create_initial_landlord'),
+    path('account/create/', views.create_landlord, name='create_landlord'),
+    path('landlord/create/', views.create_initial_landlord, name='create_initial_landlord'),
     path('accounts/create_admin/', views.create_initial_admin, name='create_initial_admin'),
 
     # Tenant URLs
@@ -40,6 +40,7 @@ urlpatterns = [
     path('tenant/register/', views.create_tenant_profile, name='tenant_register'),
 
     path('tenant/dashboard/', views.tenant_dashboard, name='tenant_dashboard'),
+    path('tenant/request-property-change/', views.request_property_change, name='request_property_change'),
     path('tenant/profile/', views.tenant_profile, name='tenant_profile'),
     path('tenant/payment/<int:rent_id>/', views.make_payment, name='make_payment'),
 ]

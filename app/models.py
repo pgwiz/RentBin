@@ -95,16 +95,24 @@ class Tenant(models.Model):
     current_property = models.ForeignKey(
         Property,
         on_delete=models.SET_NULL,
-        null=True,  # Allows the field to be empty in the database
-        blank=True  # Allows the field to be optional in forms
+        null=True,
+        blank=True
     )
-
     lease_start_date = models.DateField(null=True, blank=True)
     lease_end_date = models.DateField(null=True, blank=True)
     last_payment_date = models.DateField(null=True, blank=True)
     payment_status = models.CharField(max_length=20, choices=[('up-to-date', 'Up-to-date'), ('late', 'Late'), ('overdue', 'Overdue')], default='up-to-date')
     payment_method = models.CharField(max_length=50, blank=True)
 
+    #def save(self, *args, **kwargs):
+        #if not self.user.is_active:
+            #raise ValidationError("User must be active to create a Tenant.")
+        #super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Tenant"
+        verbose_name_plural = "Tenants"
+                    
 class Announcement(models.Model):
     landlord = models.ForeignKey(Landlord, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)

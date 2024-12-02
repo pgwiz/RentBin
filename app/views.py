@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Landlord, Tenant, Property, Announcement, RentPayment, Feedback, Reminder, TenantApprovalRequest
 from django.http import HttpResponse
 from django.utils import timezone
+import datetime
 
 from .forms import (
 TenantSetupForm,
@@ -30,7 +31,7 @@ def ContactPageView(request):
 
 def LoginPageView(request):
     if request.method == 'POST':
-        username = request.POST.get('email')
+        username = request.POST.get('username')
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
@@ -43,6 +44,7 @@ def LoginPageView(request):
             else:
                 return redirect('home')
         else:
+            print("an error occured")
             return render(request, 'app/login.html', {'error': 'Invalid credentials'})
 
     return render(request, "app/login.html")
@@ -95,15 +97,13 @@ def tenant_setup(request):
     else:
         form = TenantSetupForm()
 
-    # Get available properties to display in the form
-    properties = Property.objects.filter(landlord__user=user)
-
     context = {
         'form': form,
-        'properties': properties,
     }
     return render(request, 'app/tenant/tenant_setup.html', context)
-
+    
+    
+    
 @login_required
 def landlord_dashboard(request):
     user = request.user
@@ -198,32 +198,39 @@ def manage_tenants(request):
 def tenant_dashboard(request):
     user = request.user
 
-    if not isinstance(user, User) or not user.is_tenant:
-        return redirect('login')
+    if not hasattr(user, 'tenant'):
+        return redirect('tenant_setup')  # Redirect to setup if tenant profile does not exist
 
-    try:
-        tenant = user.tenant
-    except Tenant.DoesNotExist:
-        return redirect('login')
+    tenant = user.tenant
+    current_property = tenant.current_property
 
-    properties = tenant.current_property
+    # Fetch upcoming rent payments
     upcoming_rent = RentPayment.objects.filter(
         tenant=tenant,
         status='Pending',
         due_date__gte=datetime.date.today()
     )
+
+    # Fetch announcements related to the landlord of the current property
     announcements = Announcement.objects.filter(
-        landlord__property=properties
+        landlord=current_property.landlord if current_property else None
     )
+
+    # Fetch available properties for change requests
+    available_properties = Property.objects.exclude(id=current_property.id) if current_property else Property.objects.all()
 
     context = {
         'tenant': tenant,
-        'properties': [properties] if properties else [],
+        'current_property': current_property,
         'upcoming_rent': upcoming_rent,
         'announcements': announcements,
+        'available_properties': available_properties,
     }
     return render(request, 'app/tenant/tenant_dashboard.html', context)
-
+    
+    
+    
+    
 @login_required
 def tenant_profile(request):
     user = request.user
@@ -239,6 +246,31 @@ def tenant_profile(request):
     context = {'tenant': tenant}
     return render(request, 'app/tenant/tenant_profile.html', context)
 
+@login_required
+def request_property_change(request):
+    if request.method == 'POST':
+        property_id = request.POST.get('property_id')
+        user = request.user
+
+        # Ensure the tenant exists
+        if not hasattr(user, 'tenant'):
+            messages.error(request, "You do not have a tenant profile.")
+            return redirect('tenant_dashboard')
+
+        # Check if the property exists
+        property_instance = get_object_or_404(Property, id=property_id)
+
+        # Save the change request
+        TenantApprovalRequest.objects.create(
+            landlord=property_instance.landlord,
+            tenant=user.tenant,
+            property=property_instance,
+            status='Pending'
+        )
+        messages.success(request, "Your property change request has been submitted.")
+        return redirect('tenant_dashboard')
+        
+        
 @login_required
 def make_payment(request, rent_id):
     rent = get_object_or_404(RentPayment, id=rent_id)

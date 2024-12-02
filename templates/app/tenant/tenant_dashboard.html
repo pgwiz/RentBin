@@ -1,67 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenant Dashboard - RentBin</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'style/dashboard.css' %}">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1 class="logo">RentBin</h1>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'index' %}">Home</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                </ul>
-            </nav>
+{% extends 'app/tenant/ten_base.html' %}
+
+{% block title %}Tenant Dashboard - RentBin{% endblock %}
+
+{% block content %}
+<div class="dashboard container py-4">
+    <h2>Welcome, {{ tenant.user.first_name }}</h2>
+
+    <!-- Current Property Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Current Property</h4>
         </div>
-    </header>
+        <div class="card-body">
+            {% if current_property %}
+                <p><strong>Address:</strong> {{ current_property.address }}, {{ current_property.city }}</p>
+                <p><strong>Rent Amount:</strong> Ksh. {{ current_property.rent }}</p>
+            {% else %}
+                <p>You are not assigned to a property.</p>
+            {% endif %}
+        </div>
+    </div>
 
-    <main>
-        <section class="dashboard-section">
-            <h2>Welcome, {{ tenant.name }}</h2>
-
-            <div class="dashboard-items">
-                <div class="item">
-                    <h3>My Properties</h3>
-                    <ul>
-                        {% for property in tenant.properties %}
-                            <li><a href="{% url 'property_detail' property.id %}">{{ property.address }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
-                <div class="item">
-                    <h3>Upcoming Rent</h3>
-                    <ul>
+    <!-- Rent Payments Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Upcoming Rent Payments</h4>
+        </div>
+        <div class="card-body">
+            {% if upcoming_rent %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Due Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for rent in upcoming_rent %}
-                            <li>
-                                <p>Property: {{ rent.property.address }}</p>
-                                <p>Due Date: {{ rent.due_date }}</p>
-                                <p>Amount: ${{ rent.amount }}</p>
-                                <a href="{% url 'make_payment' rent.id %}" class="btn">Pay Now</a>
-                            </li>
+                            <tr>
+                                <td>{{ rent.due_date }}</td>
+                                <td>Ksh. {{ rent.amount }}</td>
+                                <td>{{ rent.status }}</td>
+                            </tr>
                         {% endfor %}
-                    </ul>
-                </div>
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No upcoming rent payments.</p>
+            {% endif %}
+        </div>
+    </div>
 
-                <div class="item">
-                    <h3>Announcements</h3>
-                    <ul>
-                        {% for announcement in announcements %}
-                            <li>{{ announcement.content }}</li>
+    <!-- Announcements Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Announcements</h4>
+        </div>
+        <div class="card-body">
+            {% if announcements %}
+                <ul>
+                    {% for announcement in announcements %}
+                        <li>
+                            <strong>{{ announcement.title }}</strong><br>
+                            <p>{{ announcement.content }}</p>
+                            <small>Posted on: {{ announcement.date_posted }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No announcements available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Property Change Request -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Request Property Change</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'request_property_change' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="property_id">Select Property:</label>
+                    <select name="property_id" id="property_id" class="form-control">
+                        {% for property in available_properties %}
+                            <option value="{{ property.id }}">
+                                Ksh. {{ property.rent }} - {{ property.city }} - {{ property.address }}
+                            </option>
                         {% endfor %}
-                    </ul>
+                    </select>
                 </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
-    </footer>
-</body>
-</html>
+                <button type="submit" class="btn btn-primary mt-2">Request Change</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

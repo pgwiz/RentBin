@@ -2,22 +2,54 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, Landlord, Tenant, RentPayment, Property, Announcement
 
+
 class TenantSetupForm(forms.ModelForm):
+    current_property = forms.ModelChoiceField(
+        queryset=Property.objects.all(),
+        empty_label="Select a property",
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Property",
+    )
+
     class Meta:
         model = Tenant
         fields = [
-            'phone_number', 'rent_amount', 'address', 'profile_picture',
-            'date_of_birth', 'emergency_contact', 'rental_history', 'notes'
+            'phone_number', 'profile_picture', 'date_of_birth',
+            'emergency_contact', 'address', 'current_property', 'rental_history', 'notes'
         ]
         widgets = {
-            'address': forms.TextInput(attrs={'placeholder': 'Enter your address', 'class': 'form-control'}),
-            'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-            'date_of_birth': forms.SelectDateWidget(years=range(1900, 2025), attrs={'class': 'form-control'}),
-            'emergency_contact': forms.TextInput(attrs={'placeholder': 'Enter emergency contact', 'class': 'form-control'}),
-            'rental_history': forms.Textarea(attrs={'placeholder': 'Write your rental experience', 'class': 'form-control', 'rows': 3}),
-            'notes': forms.Textarea(attrs={'placeholder': 'Additional notes', 'class': 'form-control', 'rows': 3}),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter phone number'
+            }),
+            'profile_picture': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+            }),
+            'date_of_birth': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'emergency_contact': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter emergency contact'
+            }),
+            'address': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter address'
+            }),
+            'rental_history': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Describe your rental experience',
+                'rows': 3
+            }),
+            'notes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Additional notes (optional)',
+                'rows': 2
+            }),
         }
-
+        
+            
 class TenantRegistrationForm(UserCreationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={
             'class': 'form-control',
