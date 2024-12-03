@@ -17,7 +17,6 @@ urlpatterns = [
     path('properties/delete/<int:property_id>/', views.delete_property, name='delete_property'),
     path('properties/add/', views.add_property, name='add_property'),
     path('property/<int:property_id>/', views.property_detail, name='property_detail'),
-    path('tenant/setup/', views.tenant_setup, name='tenant_setup'),
 
     #Account Login
     path('accounts/login/', views.LoginPageView, name='accounts_login'),
@@ -38,9 +37,14 @@ urlpatterns = [
     # Tenant URLs
     path('tenant/create_profile/', views.create_tenant_profile, name='create_tenant_profile'),
     path('tenant/register/', views.create_tenant_profile, name='tenant_register'),
-
     path('tenant/dashboard/', views.tenant_dashboard, name='tenant_dashboard'),
+    path('tenant/setup/', views.tenant_setup, name='tenant_setup'),
+    
     path('tenant/request-property-change/', views.request_property_change, name='request_property_change'),
     path('tenant/profile/', views.tenant_profile, name='tenant_profile'),
-    path('tenant/payment/<int:rent_id>/', views.make_payment, name='make_payment'),
+    #path('tenant/payment/<int:rent_id>/', views.make_payment, name='make_payment'),
+    path('make_payment/', views.make_payment, name='make_payment'),
+    
 ]
+
+

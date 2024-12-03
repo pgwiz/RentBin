@@ -1,63 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make Payment - RentBin</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'style/payment.css' %}">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1 class="logo">RentBin</h1>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'tenant_dashboard' %}">Dashboard</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                </ul>
-            </nav>
+{% extends 'app/tenant/ten_base.html' %}
+
+{% block title %}Make Payment - RentBin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Make Payment</h2>
+    <p><strong>Property:</strong> {{ tenant.current_property.address }}</p>
+    <p><strong>Lease End Date:</strong> {{ lease_end_date }}</p>
+    <p><strong>Outstanding Rent Amount:</strong> Ksh. <span id="remaining-balance">{{ rent_amount }}</span></p>
+
+    <form id="payment-form" method="POST" action="{% url 'make_payment'%}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="payment_method" class="form-label">Payment Method</label>
+            <select name="payment_method" id="payment_method" class="form-select" required>
+                <option value="">Select a method</option>
+                <option value="mpesa">M-Pesa</option>
+                <option value="airtel_money">Airtel Money</option>
+                <option value="tkash">T-Kash</option>
+                <option value="bank">Bank</option>
+                <option value="paypal">PayPal</option>
+                <option value="sling_money">Sling Money</option>
+            </select>
         </div>
-    </header>
+        <div class="mb-3">
+            <label for="amount_paid" class="form-label">Amount to Pay</label>
+            <input
+                type="number"
+                step="0.01"
+                name="amount_paid"
+                id="amount_paid"
+                class="form-control"
+                placeholder="Enter amount to pay"
+                required
+            >
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Payment</button>
+    </form>
+</div>
 
-    <main>
-        <section class="payment-section">
-            <h2>Make Payment</h2>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const paymentForm = document.getElementById("payment-form");
+        const amountPaidInput = document.getElementById("amount_paid");
+        const remainingBalanceElement = document.getElementById("remaining-balance");
 
-            <div class="payment-details">
-                <h3>Payment for {{ rent.property.address }}</h3>
-                <p><strong>Due Date:</strong> {{ rent.due_date }}</p>
-                <p><strong>Amount Due:</strong> ${{ rent.amount }}</p>
-            </div>
+        // Real-time balance calculation
+        amountPaidInput.addEventListener("input", function () {
+            const amountPaid = parseFloat(amountPaidInput.value) || 0;
+            const originalBalance = parseFloat({{ rent_amount|safe }});
+            const remainingBalance = Math.max(originalBalance - amountPaid, 0);
+            remainingBalanceElement.textContent = remainingBalance.toFixed(2);
+        });
 
-            <div class="payment-form">
-                <form method="post" action="{% url 'process_payment' rent.id %}">
-                    {% csrf_token %}
-                    <label for="card-number">Card Number:</label>
-                    <input type="text" id="card-number" name="card-number" required>
+        // Handle form submission
+        paymentForm.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-                    <label for="expiry-date">Expiry Date:</label>
-                    <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY" required>
+            const formData = new FormData(paymentForm);
 
-                    <label for="cvv">CVV:</label>
-                    <input type="text" id="cvv" name="cvv" required>
-
-                    <button type="submit" class="btn">Pay Now</button>
-                </form>
-            </div>
-
-            <div class="payment-options">
-                <p><strong>Other Payment Options:</strong></p>
-                <ul>
-                    <li>PayPal</li>
-                    <li>Bank Transfer</li>
-                </ul>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
-    </footer>
-</body>
-</html>
+            fetch("{% url 'make_payment' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        alert("Payment successful!");
+                        location.reload();
+                    } else {
+                        alert("Payment failed. Please try again.");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        });
+    });
+</script>
+{% endblock %}

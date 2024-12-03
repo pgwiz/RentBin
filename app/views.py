@@ -6,6 +6,10 @@ from .models import User, Landlord, Tenant, Property, Announcement, RentPayment,
 from django.http import HttpResponse
 from django.utils import timezone
 import datetime
+from datetime import timedelta
+from django.db.models import Sum
+from django.http import JsonResponse
+from django.contrib import messages
 
 from .forms import (
 TenantSetupForm,
@@ -78,32 +82,27 @@ def logout_view(request):
 def tenant_setup(request):
     user = request.user
 
-    # Check if the user already has a tenant profile
     if hasattr(user, 'tenant'):
-        return redirect('tenant_dashboard')  # Redirect to tenant dashboard if already set up
+        return redirect('tenant_dashboard')  # Redirect to tenant dashboard if profile already exists
 
     if request.method == 'POST':
         form = TenantSetupForm(request.POST, request.FILES)
         if form.is_valid():
-            # Create a new Tenant instance and associate it with the logged-in user
             tenant = form.save(commit=False)
             tenant.user = user
-            tenant.registered_date = timezone.now()  # Set registered date to current time
-            tenant.account_status = 'active'  # Set initial status to active
+            tenant.rent_amount = tenant.current_property.rent  # Set rent from selected property
+            tenant.registered_date = timezone.now()
+            tenant.lease_end_date = timezone.now()
+            tenant.account_status = 'active'
             tenant.save()
-
-            # Redirect to the tenant dashboard after successful setup
-            return redirect('tenant_dashboard')
+            return redirect('tenant_dashboard')  # Redirect after successful setup
     else:
         form = TenantSetupForm()
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'app/tenant/tenant_setup.html', context)
-    
-    
-    
+    return render(request, 'app/tenant/tenant_setup.html', {'form': form})
+        
+        
+        
 @login_required
 def landlord_dashboard(request):
     user = request.user
@@ -202,14 +201,26 @@ def tenant_dashboard(request):
         return redirect('tenant_setup')  # Redirect to setup if tenant profile does not exist
 
     tenant = user.tenant
+    print(vars(tenant))
+    print(Tenant._meta.pk.name)  
+
     current_property = tenant.current_property
 
-    # Fetch upcoming rent payments
-    upcoming_rent = RentPayment.objects.filter(
-        tenant=tenant,
-        status='Pending',
-        due_date__gte=datetime.date.today()
-    )
+    # Check for upcoming rent payments based on the lease end date
+    upcoming_rent = None
+    if tenant.lease_end_date:
+        days_remaining = (tenant.lease_end_date - timezone.now().date()).days
+        print(days_remaining)
+        if days_remaining < 20:
+            print("True:", days_remaining)
+            
+            upcoming_rent = {
+                "due_date": tenant.lease_end_date,
+                "amount": tenant.rent_amount,
+                "days_remaining": days_remaining,
+                "tenant_id": tenant.user_id,  # Include tenant ID for payment URL
+                "payment_button": True  # Show the payment button when due soon
+            }
 
     # Fetch announcements related to the landlord of the current property
     announcements = Announcement.objects.filter(
@@ -226,9 +237,7 @@ def tenant_dashboard(request):
         'announcements': announcements,
         'available_properties': available_properties,
     }
-    return render(request, 'app/tenant/tenant_dashboard.html', context)
-    
-    
+    return render(request, 'app/tenant/tenant_dashboard.html', context)    
     
     
 @login_required
@@ -271,13 +280,72 @@ def request_property_change(request):
         return redirect('tenant_dashboard')
         
         
+
+ 
 @login_required
-def make_payment(request, rent_id):
-    rent = get_object_or_404(RentPayment, id=rent_id)
-    # ... (payment processing logic) ...
-    return render(request, 'app/tenant/tenant_payment.html', {'rent': rent})
+def make_payment(request):
+    tenant = request.user.tenant
 
+    # Get all payment records for the tenant, including paid ones, and order by due date
+    rent_payments = RentPayment.objects.filter(tenant=tenant).order_by('due_date')
 
+    # Calculate the total amount paid by the tenant for the current property
+    total_paid_amount = rent_payments.filter(status='Paid').aggregate(Sum('amount'))['amount__sum'] or 0
+
+    # Get the rent amount for the tenant's current property
+    property_rent = tenant.current_property.rent
+
+    # Check if the total amount paid is less than the property rent
+    if total_paid_amount >= property_rent:
+        messages.info(request, "You have no pending rent payments.")
+        return render(request, 'app/tenant/no_payments.html')
+
+    # If there are unpaid amounts, proceed with showing the payment form
+    if rent_payments.exists():
+        rent_payment = rent_payments.first()  # Select the first payment record (earliest due date)
+    else:
+        messages.info(request, "You have no rent payment history.")
+        return render(request, 'app/tenant/no_payments.html')
+
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        amount_paid = float(request.POST.get('amount_paid', 0))
+
+        if amount_paid > rent_payment.amount:
+            messages.error(request, "You cannot pay more than the outstanding amount.")
+            return redirect('make_payment')
+
+        # Update payment details
+        rent_payment.amount -= amount_paid
+        rent_payment.payment_method = payment_method
+        rent_payment.payment_date = timezone.now()
+        rent_payment.status = 'Paid' if rent_payment.amount == 0 else 'Pending'
+        rent_payment.save()
+
+        # Update tenant lease dates
+        lease_extension_days = int(30 * (amount_paid / property_rent))
+        if tenant.lease_end_date and tenant.lease_end_date >= timezone.now().date():
+            tenant.lease_end_date += timezone.timedelta(days=lease_extension_days)
+        else:
+            tenant.lease_start_date = timezone.now()
+            tenant.lease_end_date = timezone.now() + timezone.timedelta(days=lease_extension_days)
+
+        # Update tenant last payment date
+        tenant.last_payment_date = rent_payment.payment_date
+        tenant.save()
+
+        # Return JSON response
+        return JsonResponse({
+            'success': True,
+            'payment_method': payment_method,
+            'amount_paid': amount_paid,
+            'remaining_amount': rent_payment.amount,
+            'lease_end_date': tenant.lease_end_date.strftime('%Y-%m-%d'),
+            'payment_date': rent_payment.payment_date.strftime('%Y-%m-%d %H:%M:%S'),
+        })
+
+    return render(request, 'app/tenant/tenant_payment.html', {'rent': rent_payment})        
+        
 def create_landlord(request):
     if request.method == 'POST':
         form = CreateLandlordForm(request.POST)

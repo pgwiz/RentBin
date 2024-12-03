@@ -1,0 +1,11 @@
+{% extends 'app/tenant/ten_base.html' %}
+
+{% block title %}No Payments{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>No Pending Payments</h2>
+    <p>It looks like you're all caught up! No rent payments are currently due.</p>
+    <a href="{% url 'tenant_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}

@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, Landlord, Tenant, RentPayment, Property, Announcement
 
-
 class TenantSetupForm(forms.ModelForm):
     current_property = forms.ModelChoiceField(
         queryset=Property.objects.all(),
@@ -48,7 +47,6 @@ class TenantSetupForm(forms.ModelForm):
                 'rows': 2
             }),
         }
-        
             
 class TenantRegistrationForm(UserCreationForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={

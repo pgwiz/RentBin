@@ -15,43 +15,32 @@
             {% if current_property %}
                 <p><strong>Address:</strong> {{ current_property.address }}, {{ current_property.city }}</p>
                 <p><strong>Rent Amount:</strong> Ksh. {{ current_property.rent }}</p>
+                <p><strong>Lease Period:</strong> {{ tenant.lease_start_date }} to {{ tenant.lease_end_date }}</p>
             {% else %}
                 <p>You are not assigned to a property.</p>
             {% endif %}
         </div>
     </div>
-
-    <!-- Rent Payments Section -->
-    <div class="card mb-4">
+    
+ <div class="card mb-4">
         <div class="card-header">
-            <h4>Upcoming Rent Payments</h4>
+            <h4>Upcoming Rent</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body">   
             {% if upcoming_rent %}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Due Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for rent in upcoming_rent %}
-                            <tr>
-                                <td>{{ rent.due_date }}</td>
-                                <td>Ksh. {{ rent.amount }}</td>
-                                <td>{{ rent.status }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No upcoming rent payments.</p>
-            {% endif %}
+    <p>Due Date: {{ upcoming_rent.due_date }}</p>
+    <p>Amount: Ksh. {{ upcoming_rent.amount }}</p>
+    <p>Days Remaining: {{ upcoming_rent.days_remaining }}</p>
+    
+    {% if upcoming_rent.payment_button %}
+        <a href="{% url 'make_payment' %}" class="btn btn-primary">Pay Now</a>
+    {% endif %}
+{% else %}
+    <p>No upcoming rent due.</p>
+{% endif %}
         </div>
-    </div>
-
+ </div>
+    
     <!-- Announcements Section -->
     <div class="card mb-4">
         <div class="card-header">
@@ -61,7 +50,7 @@
             {% if announcements %}
                 <ul>
                     {% for announcement in announcements %}
-                        <li>
+                        <li class="mb-3">
                             <strong>{{ announcement.title }}</strong><br>
                             <p>{{ announcement.content }}</p>
                             <small>Posted on: {{ announcement.date_posted }}</small>
@@ -74,26 +63,31 @@
         </div>
     </div>
 
-    <!-- Property Change Request -->
-    <div class="card">
+    <!-- Available Properties Section -->
+    <div class="card mb-4">
         <div class="card-header">
-            <h4>Request Property Change</h4>
+            <h4>Available Properties for Change</h4>
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'request_property_change' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="property_id">Select Property:</label>
-                    <select name="property_id" id="property_id" class="form-control">
-                        {% for property in available_properties %}
-                            <option value="{{ property.id }}">
-                                Ksh. {{ property.rent }} - {{ property.city }} - {{ property.address }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Request Change</button>
-            </form>
+            {% if available_properties %}
+                <form method="POST" action="{% url 'request_property_change' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="property" class="form-label">Select a Property</label>
+                        <select name="property" id="property" class="form-select" required>
+                            <option value="">Choose...</option>
+                            {% for property in available_properties %}
+                                <option value="{{ property.id }}">
+                                    Ksh. {{ property.rent }} - {{ property.city }} - {{ property.address }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Request Change</button>
+                </form>
+            {% else %}
+                <p>No other properties available at the moment.</p>
+            {% endif %}
         </div>
     </div>
 </div>
