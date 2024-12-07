@@ -70,7 +70,7 @@
         </div>
         <div class="card-body">
             {% if available_properties %}
-                <form method="POST" action="{% url 'tickets_home' %}">
+                <form method="POST" action="">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="property" class="form-label">Select a Property</label>

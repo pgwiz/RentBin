@@ -35,26 +35,29 @@ def HomePageView(request):
 def ContactPageView(request):
     return render(request, "app/contact.html")
 
+
 def LoginPageView(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            if user.is_landlord:
+            if hasattr(user, 'is_landlord') and user.is_landlord:
                 return redirect('landlord_dashboard')
-            elif user.is_tenant:
+            elif hasattr(user, 'is_tenant') and user.is_tenant:
                 return redirect('tenant_dashboard')
             else:
                 return redirect('home')
         else:
-            print("an error occured")
-            return render(request, 'app/login.html', {'error': 'Invalid credentials'})
+            print(f"Authentication failed for username: {username}")
+            messages.error(request, "Invalid username or password.")
+            return render(request, 'app/login.html')
 
     return render(request, "app/login.html")
-
+    
 
 def logout_view(request):
     logout(request)
@@ -605,7 +608,7 @@ def add_property(request):
             property_instance = form.save(commit=False)
             property_instance.landlord = landlord
             property_instance.save()
-            notif = f"{user} - added new property"
+            notif = f"{landlord} - added new property"
             Notification.objects.create(message=notif)
             messages.success(request, 'Property added successfully!')
             return redirect('property_list')

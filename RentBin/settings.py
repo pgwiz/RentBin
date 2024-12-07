@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from django.contrib.messages import constants as message_constants
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +29,21 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+MESSAGE_TAGS = {
+    message_constants.ERROR: 'danger',  # Map ERROR to 'danger' for Bootstrap styling
+}
+
+# settings.py
+#DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+#FILE_UPLOAD_HANDLERS = [
+ #   'django.core.files.uploadhandler.MemoryFileUploadHandler',
+   # 'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+#]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -50,7 +67,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
-    'widget_tweaks'
+    'widget_tweaks',
+    
 ]
 
 
@@ -94,9 +112,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'rentbin',
-        'USER': 'root_',
-        'PASSWORD': '@1!x1524',
-        'HOST': 'popo.mysql.database.azure.com',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
 
     }

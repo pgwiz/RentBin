@@ -67,6 +67,8 @@ urlpatterns = [
     path('make_payment/', views.make_payment, name='make_payment'),
     
     path('tickets/', views.ticket_home, name='ticket_home'),
+    path('tickets/', views.ticket_home, name='tickets_home'),
+    
     path('chats/', views.chat_page, name='chat_page'),
     path('chats/<int:room_id>/', views.room_messages, name='room_messages'),
     
