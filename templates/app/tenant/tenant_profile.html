@@ -1,102 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - RentBin</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'style/profile.css' %}">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <h1 class="logo"><a href="{% url 'tenant_dashboard' %}">RentBin</a></h1>
-            <nav>
-                <ul>
-                    <li><a href="{% url 'tenant_dashboard' %}">Dashboard</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                </ul>
-            </nav>
+{% extends "app/tenant/ten_base.html" %}
+
+{% block title %}My Profile - RentBin{% endblock %}
+
+{% block content %}
+<main class="container py-5">
+    <section class="profile-section">
+        <h2 class="mb-4">My Profile</h2>
+
+        <div class="profile-info mb-4">
+            <!-- Profile Image Section -->
+            <div class="profile-image mb-3">
+                {% if tenant.profile_picture %}
+                    <img src="{{ tenant.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle">
+                {% else %}
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/03/Twitter_default_profile_400x400.png" alt="Default Profile Picture" class="img-fluid rounded-circle">
+                {% endif %}
+                <div class="mt-2">
+                    <a href="#forLaterImplimentation" class="btn btn-outline-primary">Edit Picture</a>
+                </div>
+            </div>
+
+            <!-- Profile Details Section -->
+            <div class="profile-details">
+                <p><strong>Name:</strong> {{ tenant.user.first_name }} {{ tenant.user.last_name }}</p>
+                <p><strong>Email:</strong> {{ tenant.user.email }}</p>
+                <p><strong>Phone:</strong> {{ tenant.phone_number|default:"N/A" }}</p>
+                <p><strong>Address:</strong> {{ tenant.address|default:"N/A" }}</p>
+                <div class="mt-3">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
         </div>
-    </header>
 
-    <main>
-        <section class="profile-section">
-            <h2>My Profile</h2>
-
-            <div class="profile-info">
-                <!-- Profile Image Section -->
-                <div class="profile-image">
-                    {% if tenant.profile_picture %}
-                        <img src="{{ tenant.profile_picture.url }}" alt="Profile Picture">
+        <div class="profile-sections">
+            <!-- Properties Section -->
+            <div class="section mb-4">
+                <h3>My Properties</h3>
+                <ul class="list-group">
+                    {% if tenant.current_property %}
+                        <li class="list-group-item">
+                            <p><strong>Address:</strong> {{ tenant.current_property.address }}</p>
+                            <p><strong>City:</strong> {{ tenant.current_property.city }}</p>
+                            <p><strong>State:</strong> {{ tenant.current_property.state }}</p>
+                            <p><strong>Landlord:</strong> {{ tenant.current_property.landlord.user.first_name }} {{ tenant.current_property.landlord.user.last_name }}</p>
+                        </li>
                     {% else %}
-                        <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Picture">
+                        <li class="list-group-item">No property assigned.</li>
                     {% endif %}
-                    <a href="{% url 'edit_profile_picture' %}" class="btn">Edit Picture</a>
-                </div>
-
-                <!-- Profile Details Section -->
-                <div class="profile-details">
-                    <p><strong>Name:</strong> {{ tenant.user.first_name }} {{ tenant.user.last_name }}</p>
-                    <p><strong>Email:</strong> {{ tenant.user.email }}</p>
-                    <p><strong>Phone:</strong> {{ tenant.phone_number|default:"N/A" }}</p>
-                    <p><strong>Address:</strong> {{ tenant.address|default:"N/A" }}</p>
-                    <a href="{% url 'edit_profile' %}" class="btn">Edit Profile</a>
-                </div>
+                </ul>
             </div>
 
-            <div class="profile-sections">
-                <!-- Properties Section -->
-                <div class="section">
-                    <h3>My Properties</h3>
-                    <ul>
-                        {% if tenant.current_property %}
-                            <li>
-                                <p><strong>Address:</strong> {{ tenant.current_property.address }}</p>
-                                <p><strong>City:</strong> {{ tenant.current_property.city }}</p>
-                                <p><strong>State:</strong> {{ tenant.current_property.state }}</p>
-                                <p><strong>Landlord:</strong> {{ tenant.current_property.landlord.user.first_name }} {{ tenant.current_property.landlord.user.last_name }}</p>
-                            </li>
-                        {% else %}
-                            <li>No property assigned.</li>
-                        {% endif %}
-                    </ul>
-                </div>
-
-                <!-- Payment History Section -->
-                <div class="section">
-                    <h3>Payment History</h3>
-                    {% if tenant.rent_payments.exists %}
-                        <table>
-                            <thead>
+            <!-- Payment History Section -->
+            <div class="section mb-4">
+                <h3>Payment History</h3>
+                {% if tenant.rent_payments.exists %}
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in tenant.rent_payments.all %}
                                 <tr>
-                                    <th>Property</th>
-                                    <th>Date</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
+                                    <td>{{ payment.property.address }}</td>
+                                    <td>{{ payment.payment_date|date:"F d, Y" }}</td>
+                                    <td>Ksh. {{ payment.amount }}</td>
+                                    <td>{{ payment.status }}</td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {% for payment in tenant.rent_payments.all %}
-                                    <tr>
-                                        <td>{{ payment.property.address }}</td>
-                                        <td>{{ payment.payment_date|date:"F d, Y" }}</td>
-                                        <td>${{ payment.amount }}</td>
-                                        <td>{{ payment.status }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% else %}
-                        <p>No payment history available.</p>
-                    {% endif %}
-                </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No payment history available.</p>
+                {% endif %}
             </div>
-        </section>
-    </main>
 
-    <footer>
-        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
-    </footer>
-</body>
-</html>
+            <!-- Deactivation Request Section -->
+            <div class="section">
+                <h3>Request Account Deactivation</h3>
+                <form method="post" class="mt-3">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea name="reason" class="form-control" placeholder="Reason for deactivation" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger mt-2">Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,80 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - RentBin</title>
-    <link rel="stylesheet" href="{% static 'style/contact.css' %}">
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <h1 class="logo">RentBin</h1>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#login">Login</a></li>
-                    <li><a href="#register">Register</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+{% extends 'app/tm_base.html' %}
 
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <p>Have a question or feedback? We'd love to hear from you!</p>
+{% block title %}Contact Us - RentBin{% endblock %}
 
-            <div class="contact-wrapper">
-                <!-- Contact Form -->
-                <div class="contact-form">
-                    <form action="submit_query.php" method="POST">
-                        <label for="name">Your Name</label>
-                        <input type="text" id="name" name="name" placeholder="Enter your name" required>
+{% block content %}
+<style>
+.social-icon {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s;
+}
+.social-icon:hover {
+    transform: scale(1.1);
+}
+.contact-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.contact-info {
+    background-color: #e9f5ff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.social-icon {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s, filter 0.3s;
+}
+.social-icon:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}
+</style>
+<section id="contact">
+    <div class="container">
+        <h2 class="text-center mb-4">Contact Us</h2>
+        <p class="text-center mb-4">Have a question or feedback? We'd love to hear from you!</p>
 
-                        <label for="email">Your Email</label>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" placeholder="Enter the subject" required>
-
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="5" placeholder="Write your message here" required></textarea>
-
-                        <button type="submit" class="btn">Send Message</button>
-                    </form>
-                </div>
-
-                <!-- Contact Information -->
-                <div class="contact-info">
-                    <h3>Our Contact Information</h3>
-                    <p>Email: <a href="mailto:support@rentbin.com">support@rentbin.com</a></p>
-                    <p>Phone: +123-456-7890</p>
-                    <p>Address: 123 RentBin Street, Nairobi, Kenya</p>
-
-                    <h4>Follow Us</h4>
-                    <div class="social-icons">
-                        <a href="#"><img src="icons/facebook.png" alt="Facebook"></a>
-                        <a href="#"><img src="icons/twitter.png" alt="Twitter"></a>
-                        <a href="#"><img src="icons/linkedin.png" alt="LinkedIn"></a>
+        <div class="contact-wrapper d-flex flex-wrap justify-content-between">
+            <div class="contact-form w-100 w-md-50 mb-4 mb-md-0">
+                <h3>Get in Touch</h3>
+                <form action="{% url 'submit_contact_query' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Your Name</label>
+                        <input type="text" class="form-control border-primary" id="name" name="name" placeholder="Enter your name" required>
                     </div>
-                </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Your Email</label>
+                        <input type="email" class="form-control border-primary" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control border-primary" id="subject" name="subject" placeholder="Enter the subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control border-primary" id="message" name="message" rows="5" placeholder="Write your message here" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                </form>
             </div>
-        </div>
-    </section>
+            <div class="contact-info w-100 w-md-45 bg-light p-4 rounded shadow-sm">
+    <h3 class="text-primary mb-3">Our Contact Information</h3>
+    <p class="mb-2"><strong>Email:</strong> <a href="mailto:support@rentbin.com" class="text-decoration-none text-dark">support@rentbin.com</a></p>
+    <p class="mb-2"><strong>Phone:</strong> <span class="fw-bold text-dark">+254111791417</span></p>
+    <p class="mb-4"><strong>Address:</strong> <span class="fw-bold text-dark">123 RentBin Street, Kenya</span></p>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 RentBin. All Rights Reserved.</p>
-        <ul>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="#terms">Terms & Privacy</a></li>
-        </ul>
-    </footer>
-</body>
-</html>
+    <h4 class="text-primary mt-4">Follow Us</h4>
+    <div class="social-icons d-flex">
+        <a href="#" class="mx-2" aria-label="Facebook">
+            <img src="https://img.icons8.com/?size=100&id=118497&format=png&color=000000" alt="Facebook" class="social-icon">
+        </a>
+        <a href="#" class="mx-2" aria-label="Twitter">
+            <img src="https://img.icons8.com/?size=100&id=cMRBi0rI3iwb&format=png&color=000000" alt="Twitter" class="social-icon">
+        </a>
+        <a href="#" class="mx-2" aria-label="LinkedIn">
+            <img src="https://img.icons8.com/?size=100&id=108786&format=png&color=000000" alt="LinkedIn" class="social-icon">
+        </a>
+    </div>
+</div>
+            
+        </div>
+    </div>
+</section>
+{% endblock %}

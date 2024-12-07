@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <title>Contact Queries - RentBin</title>
+</head>
+<body>
+    <h1>Contact Queries</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for query in queries %}
+            <tr>
+                <td>{{ query.name }}</td>
+                <td>{{ query.email }}</td>
+                <td>{{ query.subject }}</td>
+                <td>{{ query.message }}</td>
+                <td>{{ query.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

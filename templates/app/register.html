@@ -1,4 +1,4 @@
-{% extends 'app/tenant/ten_base.html' %}
+{% extends 'app/tm_base.html' %}
 
 {% load widget_tweaks %}
 
@@ -10,6 +10,7 @@
             <h2 class="text-center mb-4">Create Your Tenant Profile</h2>
             <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
+                    
     <!-- Email -->
      <div class="mb-3">
         <label for="id_first_name" class="form-label">First Name</label>

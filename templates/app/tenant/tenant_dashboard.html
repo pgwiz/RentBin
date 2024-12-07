@@ -70,7 +70,7 @@
         </div>
         <div class="card-body">
             {% if available_properties %}
-                <form method="POST" action="{% url 'request_property_change' %}">
+                <form method="POST" action="{% url 'tickets_home' %}">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="property" class="form-label">Select a Property</label>
@@ -83,7 +83,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-secondary">Request Change</button>
+                    <button type="submit" class="btn btn-secondary">Request Change(Coming Soon)</button>
                 </form>
             {% else %}
                 <p>No other properties available at the moment.</p>

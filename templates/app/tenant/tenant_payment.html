@@ -5,11 +5,14 @@
 {% block content %}
 <div class="container py-4">
     <h2>Make Payment</h2>
-    <p><strong>Property:</strong> {{ tenant.current_property.address }}</p>
+    <p><strong>Property:</strong> {{ property.address }}</p>
     <p><strong>Lease End Date:</strong> {{ lease_end_date }}</p>
-    <p><strong>Outstanding Rent Amount:</strong> Ksh. <span id="remaining-balance">{{ rent_amount }}</span></p>
+    <p><strong>Outstanding Rent Amount:</strong> Ksh. <span id="remaining-balance">{{ rent_balance }}</span></p>
+</div>
 
-    <form id="payment-form" method="POST" action="{% url 'make_payment'%}">
+<div class="container mt-5">
+    <h2>Make a Payment</h2>
+    <form id="payment-form" method="POST" action="{% url 'make_payment' %}">
         {% csrf_token %}
         <div class="mb-3">
             <label for="payment_method" class="form-label">Payment Method</label>
@@ -32,8 +35,13 @@
                 id="amount_paid"
                 class="form-control"
                 placeholder="Enter amount to pay"
+                max="{{ rent_balance }}"
                 required
             >
+        </div>
+        <div class="mb-3">
+            <strong>Remaining Balance:</strong>
+            <span id="remaining-balance">{{ rent_balance }}</span>
         </div>
         <button type="submit" class="btn btn-primary">Submit Payment</button>
     </form>
@@ -44,18 +52,30 @@
         const paymentForm = document.getElementById("payment-form");
         const amountPaidInput = document.getElementById("amount_paid");
         const remainingBalanceElement = document.getElementById("remaining-balance");
+        const originalBalance = parseFloat("{{ rent_balance }}"); // Django variable rendered
 
-        // Real-time balance calculation
+        // Real-time remaining balance calculation
         amountPaidInput.addEventListener("input", function () {
             const amountPaid = parseFloat(amountPaidInput.value) || 0;
-            const originalBalance = parseFloat({{ rent_amount|safe }});
             const remainingBalance = Math.max(originalBalance - amountPaid, 0);
             remainingBalanceElement.textContent = remainingBalance.toFixed(2);
+
+            if (amountPaid > originalBalance) {
+                alert("Amount entered exceeds the outstanding balance!");
+                amountPaidInput.value = originalBalance.toFixed(2);
+                remainingBalanceElement.textContent = "0.00";
+            }
         });
 
-        // Handle form submission
+        // Handle form submission with fetch API
         paymentForm.addEventListener("submit", function (e) {
             e.preventDefault();
+
+            const amountPaid = parseFloat(amountPaidInput.value) || 0;
+            if (amountPaid > originalBalance) {
+                alert("Amount entered exceeds the outstanding balance!");
+                return;
+            }
 
             const formData = new FormData(paymentForm);
 
@@ -69,14 +89,21 @@
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.success) {
-                        alert("Payment successful!");
+                        alert(`
+Payment Successful!
+Payment Method: ${data.payment_method}
+Amount Paid: ${data.amount_paid}
+Remaining Balance: ${data.remaining_balance}
+New Lease End Date: ${data.lease_end_date}
+Payment Date: ${data.payment_date}`);
                         location.reload();
                     } else {
-                        alert("Payment failed. Please try again.");
+                        alert(data.message || "Payment failed. Please try again.");
                     }
                 })
                 .catch((error) => {
                     console.error("Error:", error);
+                    alert("An unexpected error occurred. Please try again.");
                 });
         });
     });

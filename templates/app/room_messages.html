@@ -1,0 +1,42 @@
+{% extends 'app/tm_base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ room.name }} Messages</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-group mb-4">
+                {% for message in messages %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-primary">{{ message.user.username }}</strong>:
+                                <span>{{ message.content }}</span>
+                                <small class="text-muted d-block">Sent at {{ message.timestamp }}</small>
+                            </div>
+                            {% if is_landlord %}
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="message_id" value="{{ message.id }}">
+                                    <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea name="message" class="form-control" rows="3" placeholder="Type your message"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

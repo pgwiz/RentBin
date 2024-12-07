@@ -1,0 +1,32 @@
+{% extends 'app/tm_base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Chat Rooms</h5>
+        </div>
+        <div class="card-body">
+            {% if rooms %}
+                <ul class="list-group">
+                    {% for room in rooms %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'chat_room' room.id %}" class="text-decoration-none">
+                                <strong>{{ room.name }}</strong>
+                                <span class="text-muted">({{ room.get_room_type_display }})</span>
+                            </a>
+                            <span class="badge bg-secondary text-uppercase">{{ room.room_type }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No chat rooms available.</p>
+            {% endif %}
+
+            {% if request.user.is_landlord %}
+                <a href="{% url 'create_chat_room' %}" class="btn btn-success mt-3">Create Chat Room</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

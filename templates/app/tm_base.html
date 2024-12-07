@@ -16,24 +16,37 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- Header -->
     <header class="bg-info text-white py-3 rounded-corner-navbar">
         <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="logo mb-0">RentBin</h1>
+            <a href="{% url 'home' %}" style="text-decoration:none; color:white"><h1 class="logo mb-0">RentBin</h1></a>
             <nav>
                 <ul class="nav">
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'home' %}">Home</a></li>
+                    
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'tenant_dashboard' %}">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'property_list' %}">My Properties</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'tenant_profile' %}">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'register' %}">Register</a></li>
+                    
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'contact' %}">Contact</a></li>
+                    
+                     {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'logout' %}">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </li>
+                
+                    {% endif %}
+                    {% if not user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link text-white" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="py-4">
+    <main class="py-4 flex-grow-1">
         <div class="container">
             {% block content %}
             <!-- Dynamic Content Goes Here -->
@@ -42,11 +55,29 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-3">
-        <div class="container text-center">
-            <p class="mb-0">&copy; 2024 RentBin. All Rights Reserved.</p>
+
+<!-- Interactive Footer Section -->
+<footer class="bg-light-blue py-4">
+    <div class="container text-center">
+        <div class="footer-links mb-3">
+            <a href="{% url 'home' %}" class="btn btn-link">Home</a>
+            <a href="{% url 'register' %}" class="btn btn-link">Register</a>
+            <a href="#ComingSoon" class="btn btn-link">Properties</a>
+            <a href="{% url 'contact' %}" class="btn btn-link">Contact</a>
+            <a href="{% url 'login' %}" class="btn btn-link">Login</a>
+            <a href="{% url 'logout' %}" class="btn btn-link">Logout</a>
+            <a href="{% url 'tenant_dashboard' %}" class="btn btn-link">Tenant Dashboard</a>
+            <a href="{% url 'landlord_dashboard' %}" class="btn btn-link">Landlord Dashboard</a>
         </div>
-    </footer>
+        <div class="footer-social mb-3">
+            <p>Follow us on social media for updates:</p>
+            <a href="https://facebook.com" target="_blank" class="btn btn-outline-light mx-1">Facebook</a>
+            <a href="https://twitter.com" target="_blank" class="btn btn-outline-light mx-1">Twitter</a>
+            <a href="https://instagram.com" target="_blank" class="btn btn-outline-light mx-1">Instagram</a>
+        </div>
+        <p class="text-muted">© 2024 RentBin. All rights reserved.</p>
+    </div>
+</footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>

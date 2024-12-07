@@ -21,17 +21,68 @@
     <header class="bg-dark text-white py-3 rounded-corner-navbar">
         <div class="container d-flex justify-content-between align-items-center">
             <h1 class="logo mb-0">RentBin</h1>
+            <div class="navbar">
+                <div class="notifications">
+                    <span onclick="toggleNotifications()" class="notification-icon">
+                        🛎️
+                        {% if notifications_count > 0 %}
+                            <span class="counter">{{ notifications_count }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
             <nav>
                 <ul class="nav">
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'landlord_dashboard' %}">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'manage_tenants' %}">Manage</a></li>
-                    
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'property_list' %}">Properties</a></li> 
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'chat_room_list' %}">
+                            <i class="bi bi-chat-dots"></i> Chats
+                        </a>
+                    </li>
                     <li class="nav-item"><a class="nav-link text-white" href="{% url 'logout' %}">Logout</a></li>
                 </ul>
             </nav>
         </div>
     </header>
+
+    <!-- Notification Popup -->
+<div id="notification-popup" class="notification-popup" style="background-color: #e0f7fa; border: 1px solid #b2ebf2; padding: 10px; border-radius: 8px;">
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #b2ebf2; padding-bottom: 8px;">
+        <h4 style="margin: 0; color: #00796b;">Notifications</h4>
+        <span class="close" onclick="toggleNotifications()" style="cursor: pointer; font-size: 20px; color: #004d40;">×</span>
+    </div>
+    <div class="content" style="margin-top: 10px;">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}" style="border-bottom: 1px solid #b2ebf2; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p style="margin: 0;">{{ notification.message }}</p>
+                        <small style="color: #004d40;">{{ notification.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <!-- Mark as Read Button -->
+                        {% if not notification.is_read %}
+                        <form action="{% url 'mark_as_read' notification.id %}" method="POST" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm" style="font-size: 12px;">Mark as Read</button>
+                        </form>
+                        {% endif %}
+                        <!-- Delete Button -->
+                        <form action="{% url 'delete_notification' notification.id %}" method="POST" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" style="font-size: 12px;">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-notifications" style="color: #004d40; text-align: center;">No new notifications</p>
+        {% endif %}
+    </div>
+</div>
 
     <!-- Main Content -->
     <main class="py-4">
@@ -51,6 +102,13 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function toggleNotifications() {
+            const popup = document.getElementById("notification-popup");
+            popup.style.display = popup.style.display === "block" ? "none" : "block";
+        }
+    </script>
 
     {% block extra_js %}{% endblock %} 
 </body>

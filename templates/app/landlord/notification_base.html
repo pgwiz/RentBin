@@ -1,0 +1,80 @@
+{% extends 'app/landlord/lan_base.html' %}
+
+{% block content %}
+<div id="notification-popup" class="notification-popup">
+    <div class="header">
+        <h4>Notifications</h4>
+        <span class="close" onclick="toggleNotifications()">×</span>
+    </div>
+    <div class="content">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                    <p>{{ notification.message }}</p>
+                    <small>{{ notification.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-notifications">No new notifications</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.notification-popup {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background: #f0f8ff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.notification-item.unread {
+    background: #e6f7ff;
+    font-weight: bold;
+}
+
+.notification-popup .header {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-popup .close {
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.no-notifications {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+}
+
+.notification-popup .content {
+    padding: 10px;
+}
+</style>
+
+<script>
+function toggleNotifications() {
+    const popup = document.getElementById("notification-popup");
+    popup.style.display = popup.style.display === "block" ? "none" : "block";
+}
+</script>
+{% endblock %}

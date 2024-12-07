@@ -1,0 +1,43 @@
+{% extends 'app/tm_base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>Chat Rooms</h2>
+            </div>
+            <div class="list-group">
+                {% for room in rooms %}
+                <a href="{% url 'room_messages' room.id %}" class="list-group-item list-group-item-action">
+                    {{ room.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>Your Tickets</h2>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in user_tickets %}
+                    <tr>
+                        <td>{{ ticket.subject }}</td>
+                        <td>{{ ticket.get_status_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,9 +1,6 @@
 from django.contrib import admin
-from .models import User, Landlord, Tenant, Property, RentPayment, Announcement, Feedback, Reminder, TenantApprovalRequest
-
-from django.contrib import admin
+from .models import User, Landlord, Tenant, Property, RentPayment, Announcement, Feedback, Reminder, TenantApprovalRequest, ChatRoom, Message
 from django.contrib.auth.admin import UserAdmin
-from .models import User
 
 class CustomUserAdmin(UserAdmin):
     model = User
@@ -29,3 +26,5 @@ admin.site.register(Announcement)
 admin.site.register(Feedback)
 admin.site.register(Reminder)
 admin.site.register(TenantApprovalRequest)
+admin.site.register(ChatRoom)
+admin.site.register(Message)

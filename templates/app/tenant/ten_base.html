@@ -5,31 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}RentBin{% endblock %}</title>
     {% load static %}
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> 
     <link rel="stylesheet" href="{% static 'style/lan_base.css' %}">
     
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+    <style>
+    /* Ensure the dropdown container does not overflow */
+.dropdown-menu {
+    max-height: 300px; /* Adjust this as needed */
+    overflow-y: auto; /* Add scroll when content overflows */
+    width: 100%; /* Adjust width if necessary */
+}
+
+/* Add some padding and margin to the notification text */
+.notification-text {
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Adds "..." for truncated text */
+    max-width: 200px; /* Adjust max width as needed */
+}
+    
+    </style> 
     <!-- Header -->
     <header class="bg-dark text-white py-3 rounded-corner-navbar">
         <div class="container d-flex justify-content-between align-items-center">
             <h1 class="logo mb-0">RentBin</h1>
             <nav>
                 <ul class="nav">
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'logout' %}">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'home' %}">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link text-white" href="{% url 'tenant_profile' %}">Profile</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'chat_room_list' %}">
+                            <i class="bi bi-chat-dots"></i> Chats
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'ticket_home' %}">
+                            <i class="bi bi-box-arrow-right"></i> Tickets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'notifications_view' %}">
+                            <i class="bi bi-box-arrow-right"></i> Notifications
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'logout' %}">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </nav>
-        </div>
+            <<!-- Notification Dropdown -->
+<div class="notifications">
+    {% if user.is_authenticated and notifications.exists %}
+        <button type="button" class="btn btn-outline-light position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ notifications.count }}
+                <span class="visually-hidden">unread messages</span>
+            </span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <div class="dropdown-scroll">
+                {% for notification in notifications %}
+                    <li>
+                        <div class="dropdown-item">
+                            <div class="notification-content">
+                                <span class="notification-text" id="notification-text-{{ notification.id }}">
+                                    {{ notification.message|truncatechars:50 }} <!-- Show initial truncated text -->
+                                </span>
+                                {% if not notification.is_read %}
+                                    <form method="post" action="{% url 'mark_notification_read' notification.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Mark as Read</button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" class="btn btn-sm btn-outline-info" onclick="toggleNotificationContent({{ notification.id }})">Read More</button>
+                                    <div class="notification-full-content" id="notification-full-content-{{ notification.id }}" style="display:none;">
+                                        {{ notification.message }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </div>
+        </ul>
+    {% else %}
+        <button type="button" class="btn btn-outline-light" disabled>
+            <i class="bi bi-bell"></i> No Notifications
+        </button>
+    {% endif %}
+</div>
     </header>
 
+    <!-- Notification Section -->
+    {% if notifications %}
+        <div class="container mt-3">
+            <div class="alert alert-info d-flex justify-content-between align-items-center" style="background-color: #e0f7fa; border-color: #b2ebf2;">
+                <div>
+                    <strong>Notifications:</strong>
+                    {% for notification in notifications %}
+                        <div>{{ notification.message }}</div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    {% endif %}
+
     <!-- Main Content -->
-    <main class="py-4">
+    <main class="py-4 flex-grow-1">
         <div class="container">
             {% block content %}
             <!-- Dynamic Content Goes Here -->
@@ -38,13 +133,24 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-3">
+    <footer class="bg-primary text-white py-3 mt-auto shadow-lg">
         <div class="container text-center">
             <p class="mb-0">&copy; 2024 RentBin. All Rights Reserved.</p>
         </div>
     </footer>
-
-    <!-- Bootstrap JS -->
+            <script>
+    function toggleNotificationContent(notificationId) {
+        const content = document.getElementById(`notification-full-content-${notificationId}`);
+        const text = document.getElementById(`notification-text-${notificationId}`);
+        if (content.style.display === "none") {
+            content.style.display = "block";
+            text.style.display = "none";
+        } else {
+            content.style.display = "none";
+            text.style.display = "inline";
+        }
+    }
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
     {% block extra_js %}{% endblock %}

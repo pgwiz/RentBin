@@ -4,19 +4,77 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section id="home" class="hero">
-    <div class="hero-content text-center">
+<!DOCTYPE html>
+<html lang="en">
+  {% load static %}
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentBin - Your Digital Rent Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Add these CSS styles to your style.css file or within a <style> tag in your HTML */
+      .hero {
+        background-image: url("https://source.unsplash.com/random/1920x1080/?apartment,house,rental");
+        background-size: cover;
+        background-position: center;
+        transition: background-image 0.5s ease-in-out; /* Add transition for smooth change */
+      }
+
+      .hero:hover {
+        background-image: url("https://source.unsplash.com/random/1920x1080/?city,building,real-estate");
+      }
+
+     /* .feature {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }*/
+
+     /* .feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }*/
+
+      .announcement-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .announcement-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .gallery-image {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .gallery-image:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .blockquote {
+        transition: transform 0.3s ease;
+      }
+
+      .blockquote:hover {
+        transform: translateX(10px);
+      }
+    </style>
+  </head>
+  <body>
+    <section id="home" class="hero py-5">
+      <div class="hero-content text-center">
         <h2>Simplify Rent Management</h2>
         <p>Streamline rental processes for landlords and tenants with RentBin.</p>
         <div class="cta-buttons">
-            <a href="#register" class="btn btn-primary">Get Started</a>
-            <a href="#features" class="btn btn-secondary">Learn More</a>
+          <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+          <a href="#features" class="btn btn-secondary">Learn More</a>
         </div>
-    </div>
-</section>
-
+      </div>
+    </section>
+    
 <!-- Features Section -->
-<section id="features" class="py-5">
+<section id="featured" class="py-5">
     <div class="container">
         <h3 class="text-center mb-4">Features</h3>
         <div class="row">
@@ -37,55 +95,105 @@
                         <li>Manage properties and tenants.</li>
                         <li>Send reminders for payments.</li>
                         <li>Generate rent reports.</li>
+                        <li>Share announcements with tenants.</li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- Announcements Section -->
-<main class="container py-4">
-        <section class="announcements-section">
-            <h2>Announcements</h2>
-            {% if announcements %}
-                <div class="announcements-list">
-                    {% for announcement in announcements %}
-                        <div class="announcement-card">
-                            <div class="announcement-title"> &#x1F440; {{ announcement.title }} </div>
-                            <div class="announcement-content">
-                                <p>{&#x1F4AC;}{{ announcement.content }}</p>
-                                <span class="announcement-date">Message:<br>{{ announcement.date_posted|date:"F j, Y, g:i a" }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
+    <section id="why-us" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-4">Why Choose RentBin?</h2>
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm p-3 h-100">
+              <h4 class="text-primary">Seamless Rent Management</h4>
+              <p>With RentBin, managing your rental properties is effortless. Our platform provides easy-to-use tools for both landlords and tenants, making rent tracking, payment, and communication simple and efficient.</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm p-3 h-100">
+              <h4 class="text-primary">Secure Online Payments</h4>
+              <p>We prioritize your security. RentBin offers secure online payment processing, reducing the risk of late payments and ensuring your financial transactions are protected with advanced encryption.</p>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm p-3 h-100">
+              <h4 class="text-primary">Reliable Notifications & Reminders</h4>
+              <p>Never miss an important update again. RentBin sends automated reminders and notifications for rent due dates, payment confirmations, and announcements, ensuring you stay on top of everything.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="announcements-section py-5">
+      <div class="container">
+        <h2>Announcements</h2>
+        {% if not announcements  %}
+          <div class="announcements-list">
+            {% for announcement in announcements %}
+              <div class="announcement-card mb-3 p-3 border rounded shadow-sm">
+                <div class="announcement-title"> &#x1F440; {{ announcement.title }} </div>
+                <div class="announcement-content">
+                  <p>{&#x1F4AC;}{{ announcement.content }}</p>
+                  <span class="announcement-date">Message:
+                    <br>{{ announcement.date_posted|date:"F j, Y, g:i a" }}</span>
                 </div>
-            {% else %}
-                <p>No announcements available.</p>
-            {% endif %}
-        </section>
-    </main>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>No announcements available.</p>
+        {% endif %}
+      </div>
+    </section>
+    <section id="gallery" class="py-5">
+      <div class="container">
+        <h2 class="text-center mb-4">Our Gallery</h2>
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <img src="https://b2941772.smushcdn.com/2941772/wp-content/uploads/2024/02/How-to-Create-an-Effective-Property-Listing-on-Listproperty-Nigeria-1210x605.png?lossy=2&strip=1&webp=1" class="img-fluid rounded shadow gallery-image"
+              alt="Apartments in Kenya">
+          </div>
+          <div class="col-md-4 mb-4">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8g_9hcVb-Q5RZ0Y6tTWUpMOMHogLSmi0acA&usqp=CAU" class="img-fluid rounded shadow gallery-image" alt="Rental property in Kenya">
+          </div>
+          <div class="col-md-4 mb-4">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBlsoKii4tsEuGAIWjIH-WYGgz9H47ICw8aw&usqp=CAU" class="img-fluid rounded shadow gallery-image" alt="Real estate in Kenya">
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="testimonials" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-4">What Our Users Are Saying</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <blockquote class="blockquote p-3 border rounded shadow-sm">
+              <p>"RentBin has made managing my rental properties so much easier! The system is intuitive and efficient."</p>
+              <footer class="blockquote-footer">Agaustin Karanja, Landlord</footer>
+            </blockquote>
+          </div>
+          <div class="col-md-6 mb-4">
+            <blockquote class="blockquote p-3 border rounded shadow-sm">
+              <p>"As a tenant, I can now track my rent payments and get reminders without the hassle. It's a game changer!"</p>
+              <footer class="blockquote-footer">George Wambua, Tenant</footer>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="cta" class="py-5 text-center">
+      <div class="container">
+        <h2>Ready to Manage Your Rent Effortlessly?</h2>
+        <p>Join the thousands of landlords and tenants who are simplifying their rental experience with RentBin.</p>
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Sign Up Today</a>
+      </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
 
-<!-- Contact Form -->
-<section id="contact" class="py-5">
-    <div class="container">
-        <h3 class="text-center mb-4">Contact Us</h3>
-        <form class="contact-form">
-            <div class="mb-3">
-                <label for="contactEmail" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="contactEmail" aria-describedby="emailHelp" required>
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
-            <div class="mb-3">
-                <label for="contactPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="contactPassword" required>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="checkMeOut">
-                <label class="form-check-label" for="checkMeOut">Check me out</label>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
-</section>
 
 {% endblock %}
