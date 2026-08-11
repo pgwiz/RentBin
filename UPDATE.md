@@ -1,6 +1,6 @@
 # ⚡ pgwiz
 
-> *"Webhooks: HTTP callbacks, because polling is for the impatient."*
+> *"Rate limiting: protecting your API from users who love it too much."*
 > — **Anonymous**
 
 ---
@@ -9,11 +9,11 @@
 
 | | |
 |---|---|
-| **Timestamp** | `2026-08-10 22:05:21 UTC` |
+| **Timestamp** | `2026-08-11 13:05:23 UTC` |
 | **Status** | ✅ Live |
 | **Trigger** | ☕ coffee |
-| **Message** | `while you slept, I shipped.` |
-| **Quote #** | 222 / 900 |
+| **Message** | `no days off in the repo.` |
+| **Quote #** | 223 / 900 |
 
 ---
 
@@ -21,7 +21,7 @@
 
 | Date (UTC) | Status |
 |---|---|
-| 2026-08-10 | ✅ |
+| 2026-08-11 | ✅ |
 
 ---
 
